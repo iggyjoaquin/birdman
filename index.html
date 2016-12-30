@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
+	<title>Films to Watch Instead of Birdman</title>
+	<link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="css/main.css">
+	<script src="https://www.gstatic.com/firebasejs/3.6.4/firebase.js"></script>
+	<script>
+	  // Initialize Firebase
+	  var config = {
+	    apiKey: "AIzaSyD3-uKEa5FMLNXvD9LLNtry79aBT_ZCZq0",
+	    authDomain: "films-instead-of-birdman.firebaseapp.com",
+	    databaseURL: "https://films-instead-of-birdman.firebaseio.com",
+	    storageBucket: "films-instead-of-birdman.appspot.com",
+	    messagingSenderId: "327065575881"
+	  };
+	  firebase.initializeApp(config);
+	</script>
+
+
+	<script src="bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
+	<script src="bower_components/bootstrap/dist/js/bootstrap.min.js" type="text/javascript"></script>
+	<script src="bower_components/vue/dist/vue.min.js" type="text/javascript"></script>
+</head>
+<body>
+
+	<center>
+		<div id="title">
+			<h1 class="tracking">F</h1>
+			<h1 class="main-header">ilms to Watch 
+			<h1 class="tracking">I</h1>
+			<h1 class="main-header">nstead</h1>
+			<h1 class="main-header">of Birdman </h1>
+			<div id="mask"></div>
+			<div id="mask2"></div>
+		</div>
+
+		<p id="des"> A list by Steffan Sitka</p>
+
+		<div id="content">
+			<div v-bind:style="{}" v-for="film in films" class="film-banner">
+				<p class="film-title">{{film.title}}</p>
+
+				<p class="film-des">{{film.des}}</p>
+				<div v-if="film.showShapes || $index === (films.length-1) || $index === 0" v-bind:style="{marginLeft: leftMargins[Math.floor(Math.random()*leftMargins.length)]}" class="type-squares-container">
+					<div class="type-square" v-for="n in film.shapes" v-bind:style="{ backgroundColor:colors[Math.floor(Math.random()*colors.length)], marginRight: marginRights[Math.floor(Math.random()*marginRights.length)] }"></div>
+				</div>
+
+				<div v-else class="film-margin-block"></div>
+				
+			</div>
+
+		</div>
+	</center>
+
+	<script>
+		$(function(){
+
+			var films = [];
+
+			var getFilms = firebase.database().ref('Films/').once('value').then(function(snapshot){
+				
+				var maxSquares;
+
+				if ($(window).width() < 500) {
+					maxSquares = 2;
+				} else {
+					maxSquares = 5;
+				}
+
+				var counter = 0;
+				for (key in snapshot.val()){
+					var filmObject = {};
+					filmObject.title = key;
+					filmObject.des = snapshot.val()[key];
+					filmObject.shapes = getRandomInt(2,maxSquares);
+					if (counter != 1) {
+						filmObject.showShapes = getRandomInt(0,1);
+					} else {
+						filmObject.showShapes = 1;
+					}
+
+					films.push(filmObject)
+					counter++;
+				}
+
+			
+
+				
+
+				var list = new Vue({
+					el: "#content",
+					data: {
+						films,
+						colors: [
+							"rgba(145,199,177, 0.14)", //green
+							"rgba(114,147,160, 0.15)", //blue
+							"rgba(67,67,67,0.05)",	//charcoal
+							"rgba(219,84,97,0.05)", //red
+							// "rgba(206, 179, 66, 0.1)" //old gold
+						],
+						marginRights: [
+							"150px",
+							"5px",
+							"100px",
+							"75px"
+						],
+						leftMargins: [
+							"-150px",
+							"-100px",
+							"-50px",
+							"0px",
+							"50px",
+							"100px"
+						]
+					}, 
+					methods:{
+						changeSquares: function(){
+							for (i in this.films){
+								this.films[i].shapes = getRandomInt(3,5);
+								this.films[i].showShapes = getRandomInt(3,5);
+							}
+						}
+					}
+				});
+			});
+		});
+
+		function getRandomInt(min, max) {
+		    return Math.floor(Math.random() * (max - min + 1)) + min;
+		}
+	</script>
+</body>
+</html>

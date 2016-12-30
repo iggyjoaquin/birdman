@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
+	<title>Admin</title>
+	<link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/main.css">
+	<script src="https://www.gstatic.com/firebasejs/3.6.4/firebase.js"></script>
+	<script>
+	  // Initialize Firebase
+	  var config = {
+	    apiKey: "AIzaSyD3-uKEa5FMLNXvD9LLNtry79aBT_ZCZq0",
+	    authDomain: "films-instead-of-birdman.firebaseapp.com",
+	    databaseURL: "https://films-instead-of-birdman.firebaseio.com",
+	    storageBucket: "films-instead-of-birdman.appspot.com",
+	    messagingSenderId: "327065575881"
+	  };
+	  firebase.initializeApp(config);
+	</script>
+
+	<script src="../bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
+	<script src="../bower_components/bootstrap/dist/js/bootstrap.min.js" type="text/javascript"></script>
+	<script src="../bower_components/vue/dist/vue.min.js" type="text/javascript"></script>
+	<script src="../js/main.js"></script>
+</head>
+<body>
+	<h1 id="updateHeader">Current Listings</h1>
+		<div id="editList">
+			<div class="edit-film-banner" v-for="film in filmList">
+				<div v-on:click="remove(film)" class="edit-film-delete">✖</div>
+
+				<p class="edit-film-title">{{film.title}}</p>
+				<p>{{film.des}}</p>
+			</div>
+			<p id="updateMessage" v-if="formCount > 0">Input details for new films below, deleted items and added items are added upon hitting update.</p>
+			<div class="add-form" v-for="n in formCount">
+				<form class="add-form-component">
+					<input class="add-film-input-title" type="text" name="" value="" placeholder="Title"><br>
+					<textarea class="add-film-input-des" type="text" name="" value="" placeholder="Description"></textarea>
+				</form>
+			</div>
+
+			<div id="addMovieToolbar">
+				<div id="addForm" v-on:click="formCount++">+</div>
+				<div id="remForm" v-on:click="decrementFormCount">-</div>
+			</div>
+
+			<button v-on:click="submitNewFilms" id="updateFilms">Update</button>
+			
+		</div>
+	<script>
+		var l = localStorage.getItem("authFilms");
+			if (l){
+				// do nothing
+			} else {
+				window.location = "/films/login";
+			}
+
+		$(function(){
+			
+
+			var filmList = [];
+
+			var films = firebase.database().ref('Films/').once('value').then(function(snapshot){
+			
+				for (key in snapshot.val()){
+					var filmObject = {};
+					filmObject.title = key;
+					filmObject.des = snapshot.val()[key];
+					filmList.push(filmObject)
+				}
+
+				var list = new Vue({
+					el: "#editList",
+					data: {
+						filmList,
+						formCount:0				
+					},
+					methods: {
+						remove: function (film){
+							var spliceIndex = this.$data.filmList.indexOf(film);
+							if (spliceIndex > -1) {
+							    this.$data.filmList.splice(spliceIndex, 1);
+							}
+						},
+						decrementFormCount: function(){
+							if (this.$data.formCount > 0){
+								this.$data.formCount -= 1;
+							}
+						},
+						submitNewFilms: function(){
+							var b = $(".add-form-component");
+
+							for (var i=0; i<b.length; i++){
+								var t = $($(b[i]).children()[0]).val();
+								var d = $($(b[i]).children()[2]).val();
+
+								if (t.length != 0 && d.length != 0) {
+									// add to payload
+									var filmObject = {};
+									filmObject.title = t;
+									filmObject.des = d;
+									this.$data.filmList.push(filmObject)
+								}								
+							}
+
+							this.$data.formCount = 0;
+
+							
+							var newFilmSet = {};
+
+							for (var i=0; i<this.$data.filmList.length; i++){
+								var t = this.$data.filmList[i].title;
+								var d = this.$data.filmList[i].des;
+
+								newFilmSet[t] = d;
+							}
+
+						
+						    var updates = {};
+						    updates['/Films/'] = newFilmSet;
+
+						    firebase.database().ref().update(updates).then(function(){
+						    	// show updated notifcation
+						    	$("#updateFilms").html("Updated");
+						    });
+						}
+					}
+				});
+			});
+
+
+			
+
+		});
+	</script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
+	<title>Sign In</title>
+	<link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="../css/main.css">
+	<script src="https://www.gstatic.com/firebasejs/3.6.4/firebase.js"></script>
+	<script>
+	  // Initialize Firebase
+	  var config = {
+	    apiKey: "AIzaSyD3-uKEa5FMLNXvD9LLNtry79aBT_ZCZq0",
+	    authDomain: "films-instead-of-birdman.firebaseapp.com",
+	    databaseURL: "https://films-instead-of-birdman.firebaseio.com",
+	    storageBucket: "films-instead-of-birdman.appspot.com",
+	    messagingSenderId: "327065575881"
+	  };
+	  firebase.initializeApp(config);
+	</script>
+
+
+	<script src="../bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
+	<script src="../bower_components/bootstrap/dist/js/bootstrap.min.js" type="text/javascript"></script>
+	<script src="../bower_components/vue/dist/vue.min.js" type="text/javascript"></script>
+</head>
+<body id="signInPage">
+
+	<center>
+
+		<form id="signInForm">
+		<img id="logoImg" src="../assets/logo.svg" alt="">
+		  <div class="form-group">
+		    <input type="text" class="form-control form-inputs" id="username" placeholder="Username" name="new">
+		  </div>
+		  <div class="form-group">
+		    <input type="password" class="form-control form-inputs" id="password" placeholder="Password" name="new">
+		  </div>
+	
+		  <button type="submit" id="submitButtonSignIn">Continue</button>
+		</form>
+	</center>
+
+	<script>
+		$(function(){
+			// TODO: Add flocking algorithm for background
+
+			// var l = localStorage.getItem("authFilms");
+			// if (l)
+			// 	window.location = "/films/update";	
+
+			$("#signInForm").css("padding-top", (window.innerHeight - $("#signInForm").height())/2.5 - 60 +'px');
+
+			$("#signInForm").on('submit', function(e){
+				e.preventDefault();
+				var u = $("#username").val();
+				var p = $("#password").val();
+
+				var check = firebase.database().ref('Users/' + u +'/').once('value').then(function(snapshot){
+					if (snapshot.val() == null){
+						console.log("no user found " + u);
+					}
+					else {
+					    if (snapshot.val() == p){
+					    	localStorage.setItem("authFilms", true);
+					    	window.location = "/films/update"
+					    }
+					    else {
+					    	console.log("Access denied")
+					    }
+		            }
+				});
+			});
+
+
+			// var test = firebase.database().ref('new_table/').set({
+			// 	username: "Yes",
+			// 	password: "Yes"
+			// });
+
+		});
+	</script>
+</body>
+</html>
