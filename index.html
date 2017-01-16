@@ -44,7 +44,7 @@
 			<div v-bind:style="bannerStyles[index % bannerStyles.length]" v-for="(index, film) in films" class="film-banner">
 				<p class="film-title">{{film.title}}</p>
 
-				<p class="film-des">{{film.des}}</p>
+				<p v-for="des in film.des" class="film-des">{{des}}</p>
 
 			</div>
 
@@ -70,7 +70,13 @@
 				for (key in snapshot.val()){
 					var filmObject = {};
 					filmObject.title = key;
-					filmObject.des = snapshot.val()[key];
+					filmObject.des = [];
+					var splitNewLines = snapshot.val()[key].split('\n');
+
+					for (var i =0; i<splitNewLines.length; i++) {
+						filmObject.des.push(splitNewLines[i]);
+					}
+
 					filmObject.shapes = getRandomInt(2,maxSquares);
 					if (counter != 1) {
 						filmObject.showShapes = getRandomInt(0,1);
@@ -82,9 +88,7 @@
 					counter++;
 				}
 
-
-
-
+				console.log(films);
 
 				var list = new Vue({
 					el: "#content",

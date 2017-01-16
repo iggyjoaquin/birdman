@@ -61,7 +61,7 @@ html, body {
 
 /*content*/
 @media (max-width:500px) {
-	
+
 }
 
 #content{
@@ -74,7 +74,7 @@ html, body {
 	border-left: 15px solid #F9F8F5;
     border-bottom: 15px solid #F9F8F5;
     padding-left:23px;
-    padding-bottom: 100px;
+    padding-bottom: 40px;
     margin-bottom: 70px;
 }
 
