@@ -30,7 +30,7 @@
 	<center>
 		<div id="title">
 			<h1 class="tracking">F</h1>
-			<h1 class="main-header">ilms to Watch 
+			<h1 class="main-header">ilms to Watch
 			<h1 class="tracking">I</h1>
 			<h1 class="main-header">nstead</h1>
 			<h1 class="main-header">of Birdman </h1>
@@ -41,16 +41,11 @@
 		<p id="des"> A list by Steffan Sitka</p>
 
 		<div id="content">
-			<div v-bind:style="{}" v-for="film in films" class="film-banner">
+			<div v-bind:style="bannerStyles[index % bannerStyles.length]" v-for="(index, film) in films" class="film-banner">
 				<p class="film-title">{{film.title}}</p>
 
 				<p class="film-des">{{film.des}}</p>
-				<div v-if="film.showShapes || $index === (films.length-1) || $index === 0" v-bind:style="{marginLeft: leftMargins[Math.floor(Math.random()*leftMargins.length)]}" class="type-squares-container">
-					<div class="type-square" v-for="n in film.shapes" v-bind:style="{ backgroundColor:colors[Math.floor(Math.random()*colors.length)], marginRight: marginRights[Math.floor(Math.random()*marginRights.length)] }"></div>
-				</div>
 
-				<div v-else class="film-margin-block"></div>
-				
 			</div>
 
 		</div>
@@ -62,7 +57,7 @@
 			var films = [];
 
 			var getFilms = firebase.database().ref('Films/').once('value').then(function(snapshot){
-				
+
 				var maxSquares;
 
 				if ($(window).width() < 500) {
@@ -87,9 +82,9 @@
 					counter++;
 				}
 
-			
 
-				
+
+
 
 				var list = new Vue({
 					el: "#content",
@@ -101,6 +96,12 @@
 							"rgba(67,67,67,0.05)",	//charcoal
 							"rgba(219,84,97,0.05)", //red
 							// "rgba(206, 179, 66, 0.1)" //old gold
+						],
+						bannerStyles: [
+							{borderLeftColor: "#6f83ba"}, //indigo
+							{borderLeftColor: "#BBDEFB"}, //baby blue
+							{borderLeftColor: "#D14E5D"}, //red
+							{borderLeftColor: "#FFD54F"}, //amber
 						],
 						marginRights: [
 							"150px",
@@ -116,14 +117,27 @@
 							"50px",
 							"100px"
 						]
-					}, 
+					},
+					created() {
+						this.bannerStyles = this.shuffleArray(this.bannerStyles);
+					},
 					methods:{
 						changeSquares: function(){
 							for (i in this.films){
 								this.films[i].shapes = getRandomInt(3,5);
 								this.films[i].showShapes = getRandomInt(3,5);
 							}
-						}
+						},
+						shuffleArray(arr){
+							let i, j, k;
+							for (i = arr.length; i; i--) {
+								j = Math.floor(Math.random() * i);
+								k = arr[i - 1];
+								arr[i - 1] = arr[j];
+								arr[j] = k;
+							}
+							return arr;
+						},
 					}
 				});
 			});
