@@ -30,14 +30,13 @@
 	<center>
 
 		<form id="signInForm">
-		<img id="logoImg" src="../assets/logo.svg" alt="">
 		  <div class="form-group">
 		    <input type="text" class="form-control form-inputs" id="username" placeholder="Username" name="new">
 		  </div>
 		  <div class="form-group">
 		    <input type="password" class="form-control form-inputs" id="password" placeholder="Password" name="new">
 		  </div>
-	
+
 		  <button type="submit" id="submitButtonSignIn">Continue</button>
 		</form>
 	</center>
@@ -48,9 +47,9 @@
 
 			// var l = localStorage.getItem("authFilms");
 			// if (l)
-			// 	window.location = "/films/update";	
+			// 	window.location = "/films/update";
 
-			$("#signInForm").css("padding-top", (window.innerHeight - $("#signInForm").height())/2.5 - 60 +'px');
+			$("#signInForm").css("padding-top", (window.innerHeight - $("#signInForm").height())/2.5 +'px');
 
 			$("#signInForm").on('submit', function(e){
 				e.preventDefault();
@@ -72,13 +71,6 @@
 		            }
 				});
 			});
-
-
-			// var test = firebase.database().ref('new_table/').set({
-			// 	username: "Yes",
-			// 	password: "Yes"
-			// });
-
 		});
 	</script>
 </body>
