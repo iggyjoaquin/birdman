@@ -7,6 +7,7 @@
 	<title>Admin</title>
 	<link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.min.css">
 	<link rel="stylesheet" type="text/css" href="../css/main.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
 	<script src="https://www.gstatic.com/firebasejs/3.6.4/firebase.js"></script>
 	<script>
 	  // Initialize Firebase
@@ -33,11 +34,22 @@
 
 				<p class="edit-film-title">{{film.title}}</p>
 				<p>{{film.des}}</p>
+
+				<div class="link-banner">
+					<pre v-if="film.link.length > 0">{{film.link}}</pre>
+				</div>
+
+				<div class="image-banner">
+					<pre  v-if="film.picture.length > 0">{{film.picture}}</pre>
+
+				</div>
 			</div>
 			<p id="updateMessage" v-if="formCount > 0">Input details for new films below, deleted items and added items are added upon hitting update.</p>
 			<div class="add-form" v-for="n in formCount">
 				<form class="add-form-component">
 					<input class="add-film-input-title" type="text" name="" value="" placeholder="Title"><br>
+					<input class="add-film-input-youtube" type="text" name="" value="" placeholder="Youtube Video Link (Optional)"><br>
+					<input class="add-film-input-image" type="text" name="" value="" placeholder="Image Link (Optional)"><br>
 					<textarea class="add-film-input-des" type="text" name="" value="" placeholder="Description"></textarea>
 				</form>
 			</div>
@@ -48,7 +60,7 @@
 			</div>
 
 			<button v-on:click="submitNewFilms" id="updateFilms">Update</button>
-			
+
 		</div>
 	<script>
 		var l = localStorage.getItem("authFilms");
@@ -59,16 +71,18 @@
 			}
 
 		$(function(){
-			
-
 			var filmList = [];
 
 			var films = firebase.database().ref('Films/').once('value').then(function(snapshot){
-			
+
 				for (key in snapshot.val()){
+					console.log(snapshot.val()[key]);
 					var filmObject = {};
 					filmObject.title = key;
-					filmObject.des = snapshot.val()[key];
+					filmObject.des = snapshot.val()[key].des;
+					filmObject.link = snapshot.val()[key].link;
+					filmObject.picture = snapshot.val()[key].picture;
+
 					filmList.push(filmObject)
 				}
 
@@ -76,7 +90,7 @@
 					el: "#editList",
 					data: {
 						filmList,
-						formCount:0				
+						formCount:0
 					},
 					methods: {
 						remove: function (film){
@@ -93,32 +107,51 @@
 						submitNewFilms: function(){
 							var b = $(".add-form-component");
 
-							for (var i=0; i<b.length; i++){
+							for (var i=0; i<b.length; i++) {
 								var t = $($(b[i]).children()[0]).val();
-								var d = $($(b[i]).children()[2]).val();
+								var d = $($(b[i]).children()[6]).val();
+								var link = $($(b[i]).children()[2]).val();
+								var pic = $($(b[i]).children()[4]).val();
 
 								if (t.length != 0 && d.length != 0) {
 									// add to payload
 									var filmObject = {};
 									filmObject.title = t;
 									filmObject.des = d;
+
+									if (link.length > 0 && link.indexOf('youtube') > -1) {
+										filmObject.link = link;
+									} else {
+										filmObject.link = "";
+									}
+
+
+									if (pic.length > 0) {
+										filmObject.picture = pic;
+									} else {
+										filmObject.picture = "";
+									}
+
+
 									this.$data.filmList.push(filmObject)
-								}								
+								}
 							}
 
 							this.$data.formCount = 0;
 
-							
 							var newFilmSet = {};
+							var list = this.$data.filmList
 
-							for (var i=0; i<this.$data.filmList.length; i++){
-								var t = this.$data.filmList[i].title;
-								var d = this.$data.filmList[i].des;
+							for (var i=0; i<list.length; i++){
+								var key = list[i].title;;
+								newFilmSet[key] = {};
+								newFilmSet[key].title = list[i].title;
+								newFilmSet[key].des = list[i].des;
+								newFilmSet[key].link = list[i].link;
+								newFilmSet[key].picture = list[i].picture;
 
-								newFilmSet[t] = d;
 							}
 
-						
 						    var updates = {};
 						    updates['/Films/'] = newFilmSet;
 
@@ -132,7 +165,7 @@
 			});
 
 
-			
+
 
 		});
 	</script>

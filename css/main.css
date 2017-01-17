@@ -281,6 +281,24 @@ canvas{
 	font-size:20px;
 }
 
+.add-film-input-youtube{
+	height: 50px;
+	width:500px;
+	margin-bottom: 20px;
+	outline: none;
+	padding-left: 12px;
+	font-size:20px;
+}
+
+.add-film-input-image{
+	height: 50px;
+	width:500px;
+	margin-bottom: 20px;
+	outline: none;
+	padding-left: 12px;
+	font-size:20px;
+}
+
 #updateMessage{
 	text-align: center;
 }

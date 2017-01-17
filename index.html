@@ -60,8 +60,8 @@
 	<script>
 		$(function(){
 
-
 			// checkGAPI();
+
 			function checkGAPI() {
 				if (gapi.client && YT.Player) {
 					gapi.client.setApiKey('AIzaSyDdqpSC40t7zJwABn5jCeFtSRsPR9l9VeA');
@@ -76,21 +76,28 @@
 						});
 
 						req.execute(function(response){;
+							  //var id = response.items[0].id.videoId;
+							  var id = 'hgTtEObfncc';
+
 						      var player = new YT.Player('player', {
 						          height: '390',
 						          width: '640',
-						          videoId: response.items[0].id.videoId,
+						          videoId: id,
 						          events: {
 						            'onReady': onPlayerReady,
 						            'onStateChange': onPlayerStateChange
 						          }
 						      });
 
+
 						      // 4. The API will call this function when the video player is ready.
 						      function onPlayerReady(event) {
 						        event.target.playVideo();
 						      }
 
+						      // 5. The API calls this function when the player's state changes.
+						      //    The function indicates that when playing a video (state=1),
+						      //    the player should play for six seconds and then stop.
 						      var done = false;
 						      function onPlayerStateChange(event) {
 						        if (event.data == YT.PlayerState.PLAYING && !done) {
@@ -126,8 +133,10 @@
 				for (key in snapshot.val()){
 					var filmObject = {};
 					filmObject.title = key;
+					filmObject.picture = snapshot.val()[key].picture;
+					filmObject.link = snapshot.val()[key].link;
 					filmObject.des = [];
-					var splitNewLines = snapshot.val()[key].split('\n');
+					var splitNewLines = snapshot.val()[key].des.split('\n');
 
 					for (var i =0; i<splitNewLines.length; i++) {
 						filmObject.des.push(splitNewLines[i]);
@@ -143,6 +152,8 @@
 					films.push(filmObject)
 					counter++;
 				}
+
+				console.log(films);
 
 				var list = new Vue({
 					el: "#content",
